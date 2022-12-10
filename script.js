@@ -72,8 +72,8 @@ buttons.forEach((item) => {
     convertRight();
 
     if (item.classList.contains("left")) {
-      urlLeft = `https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`;
-      fetch(urlLeft)
+      urlRight = `https://api.exchangerate.host/latest?base=${symbols}&symbols=${base}`;
+      fetch(urlRight)
         .then((res) => res.json())
         .then((data) => {
           valueLeft = +Object.values(data.rates);
