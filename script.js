@@ -10,84 +10,70 @@ let base = "RUB";
 let symbols = "USD";
 let valueLeft;
 let valueRight;
-let urlLeft;
+let url;
 let urlRight;
 
-function convertLeft() {
-  buttonsLeft.forEach((item) => {
-    if (item.innerHTML == base) {
+function leftFunc () {
+  rightInp.value = (+leftInp.value * valueLeft).toFixed(2);
+};
+
+function rightFunc () {
+  leftInp.value = (+rightInp.value * valueRight).toFixed(2);
+};
+
+function convert() {
+  buttons.forEach((item) => {
+    if (
+      (item.classList.contains("left") && item.innerHTML == base) ||
+      (item.classList.contains("right") && item.innerHTML == symbols)
+    ) {
       item.classList.add("clicked");
     } else {
       item.classList.remove("clicked");
     }
   });
 
-  urlLeft = `https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`;
-  fetch(urlLeft)
-    .then((res) => res.json())
-    .then((data) => {
-      valueLeft = +Object.values(data.rates);
-      currencyLeft.innerHTML = `1 ${base} = ${valueLeft} ${symbols}`;
-    });
+  if (base != symbols) {
+    url = `https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        valueLeft = +Object.values(data.rates);
+        valueRight = (1 / valueLeft).toFixed(6);
+        currencyLeft.innerHTML = `1 ${base} = ${valueLeft} ${symbols}`;
+        currencyRight.innerHTML = `1 ${symbols} = ${valueRight} ${base}`;
+      });
+  } else {
+    valueLeft = 1;
+    valueRight = 1;
+    currencyLeft.innerHTML = `1 ${base} = 1 ${symbols}`;
+    currencyRight.innerHTML = `1 ${symbols} = 1 ${base}`;
+  }
 
-  leftInp.addEventListener("keyup", () => {
-    rightInp.value = (+leftInp.value * valueLeft).toFixed(2);
-  });
+  leftInp.addEventListener("keyup", leftFunc)
+  rightInp.addEventListener("keyup", rightFunc)
+
+  leftInp.addEventListener("click", (e) => {
+    e.target.value = ""
+  })
+  rightInp.addEventListener("click", (e) => {
+    e.target.value = ""
+  })
 }
 
-function convertRight() {
-  buttonsRight.forEach((item) => {
-    if (item.innerHTML == symbols) {
-      item.classList.add("clicked");
-    } else {
-      item.classList.remove("clicked");
-    }
-  });
-
-  urlRight = `https://api.exchangerate.host/latest?base=${symbols}&symbols=${base}`;
-  fetch(urlRight)
-    .then((res) => res.json())
-    .then((data) => {
-      valueRight = +Object.values(data.rates);
-      currencyRight.innerHTML = `1 ${symbols} = ${valueRight} ${base}`;
-    });
-
-  rightInp.addEventListener("keyup", () => {
-    leftInp.value = (+rightInp.value * valueRight).toFixed(2);
-  });
-}
-
-convertLeft();
-convertRight();
+convert();
 
 buttons.forEach((item) => {
   item.addEventListener("click", () => {
     if (item.classList.contains("left")) {
       base = item.innerHTML;
+      convert()
+      setTimeout(rightFunc, 10);
     }
     if (item.classList.contains("right")) {
       symbols = item.innerHTML;
-    }
-    convertLeft();
-    convertRight();
-
-    if (item.classList.contains("left")) {
-      urlRight = `https://api.exchangerate.host/latest?base=${symbols}&symbols=${base}`;
-      fetch(urlRight)
-        .then((res) => res.json())
-        .then((data) => {
-          valueLeft = +Object.values(data.rates);
-          leftInp.value = (+rightInp.value * valueRight).toFixed(2);
-        });
-    }
-    if (item.classList.contains("right")) {
-      urlLeft = `https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`;
-      fetch(urlLeft)
-        .then((res) => res.json())
-        .then((data) => {
-          valueLeft = +Object.values(data.rates);
-          rightInp.value = (+leftInp.value * valueLeft).toFixed(2);
-        });
+      convert()
+      setTimeout(leftFunc, 10);
     }
   });
 });
