@@ -1,6 +1,4 @@
 let buttons = document.querySelectorAll(".btn");
-let buttonsLeft = document.querySelectorAll(".btn.left");
-let buttonsRight = document.querySelectorAll(".btn.right");
 let leftInp = document.querySelector(".inp.left");
 let rightInp = document.querySelector(".inp.right");
 let currencyLeft = document.querySelector(".currency.p.left");
@@ -11,7 +9,6 @@ let symbols = "USD";
 let valueLeft;
 let valueRight;
 let url;
-let urlRight;
 
 function leftFunc () {
   rightInp.value = (+leftInp.value * valueLeft).toFixed(2);
