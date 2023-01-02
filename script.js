@@ -10,15 +10,15 @@ let valueLeft;
 let valueRight;
 let url;
 
-function leftFunc () {
+function leftFunc() {
   rightInp.value = (+leftInp.value * valueLeft).toFixed(2);
-};
+}
 
-function rightFunc () {
+function rightFunc() {
   leftInp.value = (+rightInp.value * valueRight).toFixed(2);
-};
+}
 
-function convert() {
+async function convert() {
   buttons.forEach((item) => {
     if (
       (item.classList.contains("left") && item.innerHTML == base) ||
@@ -32,7 +32,7 @@ function convert() {
 
   if (base != symbols) {
     url = `https://api.exchangerate.host/latest?base=${base}&symbols=${symbols}`;
-    fetch(url)
+    await fetch(url)
       .then((res) => res.json())
       .then((data) => {
         valueLeft = +Object.values(data.rates);
@@ -47,30 +47,30 @@ function convert() {
     currencyRight.innerHTML = `1 ${symbols} = 1 ${base}`;
   }
 
-  leftInp.addEventListener("keyup", leftFunc)
-  rightInp.addEventListener("keyup", rightFunc)
+  leftInp.addEventListener("keyup", leftFunc);
+  rightInp.addEventListener("keyup", rightFunc);
 
   leftInp.addEventListener("click", (e) => {
-    e.target.value = ""
-  })
+    e.target.value = "";
+  });
   rightInp.addEventListener("click", (e) => {
-    e.target.value = ""
-  })
+    e.target.value = "";
+  });
 }
 
 convert();
 
 buttons.forEach((item) => {
-  item.addEventListener("click", () => {
+  item.addEventListener("click", async () => {
     if (item.classList.contains("left")) {
       base = item.innerHTML;
-      convert()
-      setTimeout(rightFunc, 10);
+      await convert();
+      rightFunc();
     }
     if (item.classList.contains("right")) {
       symbols = item.innerHTML;
-      convert()
-      setTimeout(leftFunc, 10);
+      await convert();
+      leftFunc();
     }
   });
 });
